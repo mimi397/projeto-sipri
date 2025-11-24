@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1763937687 source:/home/mikaelly/Documentos/SIPRIREPOSITORIO/SIPRI/main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
