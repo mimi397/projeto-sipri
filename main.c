@@ -1,12 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-<<<<<<< HEAD
-=======
 #include <errno.h>
 #include <unistd.h>
 
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
 
 #define MAX_PRODUTOS 200
 #define MAX_NOME 80
@@ -24,8 +21,6 @@
 #define MAGENTA "\033[35m"
 #define CYAN    "\033[36m"
 
-<<<<<<< HEAD
-=======
 /* Nomes de arquivos */
 #define ARQ_PRODUTOS "produtos.dat"
 #define ARQ_PRODUTOS_TMP "produtos.tmp"
@@ -34,7 +29,6 @@
 #define ARQ_CONFIG_TMP "config.tmp"
 #define ARQ_CONFIG_BAK "config.bak"
 
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
 /* Configurações globais de despesas fixas (mensais) */
 struct Config {
     double gasto_agua;
@@ -60,16 +54,6 @@ struct Produto {
     double preco_produtor;
 };
 
-<<<<<<< HEAD
-/* ----- Funções de interface ----- */
-void limpar_tela() {
-    system("clear");
-}
-
-void pausar() {
-    printf("\n%s%sPressione ENTER para continuar...%s", BOLD, CYAN, RESET);
-    getchar();
-=======
 /* ----- Prototypes ----- */
 void imprimir_aviso(const char *msg);
 void imprimir_erro(const char *msg);
@@ -106,7 +90,6 @@ void pausar() {
     char tmp[BUF_SIZE];
     printf("\n%s%sPressione ENTER para continuar...%s", BOLD, CYAN, RESET);
     if (fgets(tmp, sizeof(tmp), stdin) == NULL) return;
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
 }
 
 void imprimir_linha(char c, int tamanho) {
@@ -144,11 +127,6 @@ void imprimir_aviso(const char *msg) {
     printf("\n%s%s⚠ %s%s\n", BOLD, YELLOW, msg, RESET);
 }
 
-<<<<<<< HEAD
-/* ----- Funções de arquivo ----- */
-int carregarArquivo(struct Produto produtos[], int *qtd) {
-    FILE *f = fopen("produtos.dat", "rb");
-=======
 /* ----- Util ----- */
 double clamp_double(double v, double lo, double hi) {
     if (v < lo) return lo;
@@ -269,7 +247,6 @@ int salvarProdutosAtomic(struct Produto produtos[], int qtd) {
 
 int carregarProdutos(struct Produto produtos[], int *qtd) {
     FILE *f = fopen(ARQ_PRODUTOS, "rb");
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
     if (!f) { *qtd = 0; return 0; }
     *qtd = 0;
     while (fread(&produtos[*qtd], sizeof(struct Produto), 1, f) == 1) {
@@ -280,19 +257,6 @@ int carregarProdutos(struct Produto produtos[], int *qtd) {
     return 1;
 }
 
-<<<<<<< HEAD
-int salvarEmArquivo(struct Produto produtos[], int qtd) {
-    FILE *f = fopen("produtos.dat", "wb");
-    if (!f) return 0;
-    for (int i = 0; i < qtd; i++) {
-        fwrite(&produtos[i], sizeof(struct Produto), 1, f);
-    }
-    fclose(f);
-    return 1;
-}
-
-=======
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
 /* ----- Auxiliares I/O ----- */
 void lerLinha(char *buf, int n) {
     if (fgets(buf, n, stdin) == NULL) { buf[0] = '\0'; return; }
@@ -349,12 +313,8 @@ double coletarIngredientesText(char *descricao, int descSize, int *rendimento) {
         }
 
         custo_total += custo;
-<<<<<<< HEAD
-        strncat(descricao, buf, descSize - strlen(descricao) - 1);
-=======
         if ((int)strlen(descricao) + (int)strlen(buf) < descSize - 1)
             strncat(descricao, buf, descSize - strlen(descricao) - 1);
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
         printf("%s-> Custo de %s: %sR$ %.2f%s\n", GREEN, nome, BOLD, custo, RESET);
     }
 
@@ -388,12 +348,9 @@ void calcularTudo(struct Produto *p) {
 
     if (p->usar_mei_comercio) p->imposto_percent = 4.0;
 
-<<<<<<< HEAD
-=======
     /* garantir percentuais válidos antes do cálculo */
     validarPercentuaisProduto(p);
 
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
     double lucro_valor = p->custo_unitario * (p->lucro_produtor_percent / 100.0);
     double preco_com_lucro = p->custo_unitario + lucro_valor;
 
@@ -430,92 +387,6 @@ void configurarDespesasFixas() {
     lerLinha(buf, sizeof(buf));
     if (buf[0] != '\0') config.producao_mensal_unidades = atoi(buf);
 
-<<<<<<< HEAD
-    imprimir_sucesso("Configuracoes atualizadas com sucesso!");
-    pausar();
-}
-
-/* ----- Cadastro de produto ----- */
-void cadastrarProduto(struct Produto produtos[], int *qtd) {
-    if (*qtd >= MAX_PRODUTOS) {
-        imprimir_erro("Limite de produtos atingido!");
-        pausar();
-        return;
-    }
-
-    imprimir_cabecalho("CADASTRAR NOVO PRODUTO");
-
-    char buf[BUF_SIZE];
-    struct Produto p;
-    memset(&p, 0, sizeof(p));
-
-    printf("\n%sNome do produto: %s", CYAN, RESET);
-    lerLinha(p.nome, sizeof(p.nome));
-
-    printf("%sModo (1=custo direto/unidade | 2=receita com ingredientes): %s", CYAN, RESET);
-    lerLinha(buf, sizeof(buf));
-    p.modo = atoi(buf);
-    if (p.modo != 1 && p.modo != 2) p.modo = 1;
-
-    if (p.modo == 1) {
-        printf("%sPreco de custo por unidade (R$): %s", CYAN, RESET);
-        lerLinha(buf, sizeof(buf));
-        p.preco_custo = atof(buf);
-    } else {
-        imprimir_secao("INGREDIENTES DA RECEITA");
-        double custoCalc = coletarIngredientesText(p.ingredientes_desc, sizeof(p.ingredientes_desc), &p.rendimento);
-        if (custoCalc < 0.0) {
-            imprimir_erro("Erro na insercao de ingredientes. Cadastro cancelado.");
-            pausar();
-            return;
-        }
-        p.investimento_total = custoCalc;
-
-        printf("\n%sDespesas variaveis (embalagem, entrega etc.) - R$ [Enter=0]: %s", CYAN, RESET);
-        lerLinha(buf, sizeof(buf));
-        if (buf[0] != '\0') p.despesas_variaveis = atof(buf);
-        else p.despesas_variaveis = 0.0;
-    }
-
-    imprimir_secao("CONFIGURACOES FINANCEIRAS");
-
-    printf("%sUsar regime MEI COMERCIO (imposto 4%%)? (s/n): %s", CYAN, RESET);
-    lerLinha(buf, sizeof(buf));
-    if (buf[0] == 's' || buf[0] == 'S') {
-        p.usar_mei_comercio = 1;
-        p.imposto_percent = 4.0;
-        printf("%s✓ MEI Comercio aplicado (4%%)%s\n", GREEN, RESET);
-    } else {
-        p.usar_mei_comercio = 0;
-        printf("%sPercentual de imposto (%%): %s", CYAN, RESET);
-        lerLinha(buf, sizeof(buf));
-        p.imposto_percent = atof(buf);
-    }
-
-    printf("%sTaxa da maquininha/cartao (%%) [ex: 2.5]: %s", CYAN, RESET);
-    lerLinha(buf, sizeof(buf));
-    p.taxa_cartao_percent = atof(buf);
-
-    printf("%sPercentual de lucro desejado (%%): %s", CYAN, RESET);
-    lerLinha(buf, sizeof(buf));
-    p.lucro_produtor_percent = atof(buf);
-
-    calcularTudo(&p);
-    produtos[*qtd] = p;
-    (*qtd)++;
-
-    if (!salvarEmArquivo(produtos, *qtd)) {
-        imprimir_aviso("Falha ao salvar arquivo (produto ficou em memoria)");
-    }
-
-    imprimir_secao("RESULTADO DO CADASTRO");
-    imprimir_sucesso("Produto cadastrado com sucesso!");
-    imprimir_valor("Custo unitario (com rateio)", p.custo_unitario);
-    imprimir_valor("PRECO FINAL AO CLIENTE", p.preco_produtor);
-
-    pausar();
-}
-=======
     if (!salvarConfigAtomic()) {
         imprimir_aviso("Falha ao salvar configuracoes em disco.");
     } else {
@@ -524,7 +395,6 @@ void cadastrarProduto(struct Produto produtos[], int *qtd) {
     pausar();
 }
 
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
 /* ----- Listar produtos ----- */
 void listarProdutos(struct Produto produtos[], int qtd) {
     imprimir_cabecalho("LISTA DE PRODUTOS CADASTRADOS");
@@ -597,14 +467,10 @@ void editarProduto(struct Produto produtos[], int qtd) {
 
     printf("%sNovo nome [Enter mantem: %s]: %s", CYAN, p->nome, RESET);
     lerLinha(buf, sizeof(buf));
-<<<<<<< HEAD
-    if (buf[0] != '\0') strncpy(p->nome, buf, sizeof(p->nome)-1);
-=======
     if (buf[0] != '\0') {
         strncpy(p->nome, buf, sizeof(p->nome)-1);
         p->nome[sizeof(p->nome)-1] = '\0';
     }
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
 
     printf("%sAlterar modo/ingredientes? (s/n): %s", CYAN, RESET);
     lerLinha(buf, sizeof(buf));
@@ -649,15 +515,10 @@ void editarProduto(struct Produto produtos[], int qtd) {
     lerLinha(buf, sizeof(buf));
     if (buf[0] != '\0') p->lucro_produtor_percent = atof(buf);
 
-<<<<<<< HEAD
-    calcularTudo(p);
-    if (!salvarEmArquivo(produtos, qtd))
-=======
     /* validar e recalcular */
     validarPercentuaisProduto(p);
     calcularTudo(p);
     if (!salvarProdutosAtomic(produtos, qtd))
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
         imprimir_aviso("Falha ao salvar apos edicao.");
 
     imprimir_sucesso("Produto atualizado e recalculado!");
@@ -665,8 +526,6 @@ void editarProduto(struct Produto produtos[], int qtd) {
 }
 
 /* ----- Excluir produto ----- */
-<<<<<<< HEAD
-=======
 void excluirProdutoIndex(struct Produto produtos[], int *qtd, int idx) {
     if (idx < 0 || idx >= *qtd) {
         imprimir_erro("Indice invalido para exclusao.");
@@ -677,7 +536,6 @@ void excluirProdutoIndex(struct Produto produtos[], int *qtd, int idx) {
     (*qtd)--;
 }
 
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
 void excluirProduto(struct Produto produtos[], int *qtd) {
     if (*qtd == 0) {
         imprimir_aviso("Nenhum produto para excluir.");
@@ -706,16 +564,9 @@ void excluirProduto(struct Produto produtos[], int *qtd) {
         return;
     }
 
-<<<<<<< HEAD
-    for (int i = idx; i < (*qtd) - 1; i++)
-        produtos[i] = produtos[i + 1];
-    (*qtd)--;
-    salvarEmArquivo(produtos, *qtd);
-=======
     excluirProdutoIndex(produtos, qtd, idx);
     if (!salvarProdutosAtomic(produtos, *qtd))
         imprimir_aviso("Falha ao salvar apos exclusao.");
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
 
     imprimir_sucesso("Produto excluido!");
     pausar();
@@ -766,10 +617,7 @@ void calculoRapido() {
     lerLinha(buf, sizeof(buf));
     p.lucro_produtor_percent = atof(buf);
 
-<<<<<<< HEAD
-=======
     validarPercentuaisProduto(&p);
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
     calcularTudo(&p);
 
     imprimir_secao("RESULTADO");
@@ -779,8 +627,6 @@ void calculoRapido() {
     pausar();
 }
 
-<<<<<<< HEAD
-=======
 /* ----- Menu curto após cadastro ----- */
 void menuPosCadastro(struct Produto produtos[], int *qtd, int idxRecente) {
     char buf[BUF_SIZE];
@@ -936,24 +782,17 @@ void cadastrarProduto(struct Produto produtos[], int *qtd) {
     menuPosCadastro(produtos, qtd, idxRecente);
 }
 
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
 /* ----- Menu principal ----- */
 int main() {
     struct Produto produtos[MAX_PRODUTOS];
     int qtd = 0;
 
-<<<<<<< HEAD
-=======
     /* valores default */
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
     config.gasto_agua = 0.0;
     config.gasto_luz = 0.0;
     config.gasto_gas = 0.0;
     config.producao_mensal_unidades = 0;
 
-<<<<<<< HEAD
-    carregarArquivo(produtos, &qtd);
-=======
     /* carregar config e produtos ao iniciar */
     if (!carregarConfig()) {
         /* não existe config.dat: mantém defaults e tenta salvar (não crítico) */
@@ -963,7 +802,6 @@ int main() {
     }
 
     carregarProdutos(produtos, &qtd);
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
 
     char buf[BUF_SIZE];
     int opc;
@@ -1000,22 +838,14 @@ int main() {
             case 5: calculoRapido(); break;
             case 6: configurarDespesasFixas(); break;
             case 7:
-<<<<<<< HEAD
-                if (salvarEmArquivo(produtos, qtd))
-=======
                 if (salvarProdutosAtomic(produtos, qtd))
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
                     imprimir_sucesso("Produtos salvos!");
                 else
                     imprimir_erro("Falha ao salvar!");
                 pausar();
                 break;
             case 8:
-<<<<<<< HEAD
-                carregarArquivo(produtos, &qtd);
-=======
                 carregarProdutos(produtos, &qtd);
->>>>>>> df2c658 (Adicionando versão v4.0 ao projeto)
                 imprimir_sucesso("Produtos carregados!");
                 printf("Total de produtos: %d\n", qtd);
                 pausar();
