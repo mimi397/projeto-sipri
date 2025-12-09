@@ -60,31 +60,30 @@ struct Produto {
 };
 
 /* ----- Prototypes ----- */
-void imprimir_aviso(const char *msg);         // Exibe aviso 
-void imprimir_erro(const char *msg);          // Exibe mensagem de erro em vermelho
-void imprimir_sucesso(const char *msg);       // Exibe mensagem de sucesso em verde
-void imprimir_valor(const char *label, double valor); // Exibe um rótulo e um valor 
-void imprimir_secao(const char *titulo);      // Exibe título destacado para separar seções
-void limpar_tela();                           // Limpa o terminal 
-void pausar();                                // Aguarda usuário pressionar ENTER
-void lerLinha(char *buf, int n);              // Lê string com segurança, evitando overflow
-double coletarIngredientesText(char *descricao, int descSize, int *rendimento); //Retorna o custo total dos ingredientes.
-void calcularTudo(struct Produto *p);         // Calcula custo unitário, preço final e outros valores derivados do produto.
-int salvarConfigAtomic();                     // Salva configuração de forma "segura" (atomic)
-int carregarConfig();                         // Carrega config do arquivo, se existir
-int salvarProdutosAtomic(struct Produto produtos[], int qtd);   // Salva vetor de produtos
-int carregarProdutos(struct Produto produtos[], int *qtd);      // Carrega vetor de produtos
-void editarProduto(struct Produto produtos[], int qtd);         // edita vetor de produto existente
-void excluirProdutoIndex(struct Produto produtos[], int *qtd, int idx); // exclui produto 
-void listarProdutos(struct Produto produtos[], int qtd);        //lista vetor de produts
-void excluirProduto(struct Produto produtos[], int *qtd);       //exlui produtos
-void calculoRapido();                                           //calculadora 
-double lerDoubleValidado(const char *msg, double valorAtual);   //verificar entrada double
-int lerIntValidado(const char *msg, int valorAtual);            //verificar entrada int
-struct Produto validarPercentuaisProduto(struct Produto p);     //validar percentuais
+void imprimir_aviso(const char *msg);
+void imprimir_erro(const char *msg);
+void imprimir_sucesso(const char *msg);
+void imprimir_valor(const char *label, double valor);
+void imprimir_secao(const char *titulo);
+void limpar_tela();
+void pausar();
+void lerLinha(char *buf, int n);
+double coletarIngredientesText(char *descricao, int descSize, int *rendimento);
+void calcularTudo(struct Produto *p);
+int salvarConfigAtomic();
+int carregarConfig();
+int salvarProdutosAtomic(struct Produto produtos[], int qtd);
+int carregarProdutos(struct Produto produtos[], int *qtd);
+void editarProduto(struct Produto produtos[], int qtd);
+void excluirProdutoIndex(struct Produto produtos[], int *qtd, int idx);
+void listarProdutos(struct Produto produtos[], int qtd);
+void excluirProduto(struct Produto produtos[], int *qtd);
+void calculoRapido();
+double lerDoubleValidado(const char *msg, double valorAtual);
+int lerIntValidado(const char *msg, int valorAtual);
+struct Produto validarPercentuaisProduto(struct Produto p);
 
 //Funções de interface
-// Limpa o console (compatível com Windows e Linux/Mac)
 void limpar_tela() {
     #ifdef _WIN32
         system("cls");
@@ -92,114 +91,102 @@ void limpar_tela() {
         printf("\033[2J\033[H");
     #endif
 }
-// Pausa a execução até o usuário pressionar ENTER
+
 void pausar() {
     char tmp[BUF_SIZE];
     printf("\n%s%sPressione ENTER para continuar...%s", BOLD, CYAN, RESET);
     if (fgets(tmp, sizeof(tmp), stdin) == NULL) return;
 }
-// Imprime um caractere repetido 'tamanho' vezes (cria uma linha horizontal)
+
 void imprimir_linha(char c, int tamanho) {
-    for (int i = 0; i < tamanho; i++) 
+    for (int i = 0; i < tamanho; i++)
         printf("%c", c);
     printf("\n");
 }
-// Limpa a tela e exibe um título centralizado com bordas
+
 void imprimir_cabecalho(const char *titulo) {
-    limpar_tela(); 
-    printf("%s%s", BOLD, CYAN); 
-    imprimir_linha('=', 70); 
-    // Calcula espaços para centralizar o texto na largura de 70 caracteres
-    int len = strlen(titulo); 
-    int espacos = (70 - len) / 2; 
-    for (int i = 0; i < espacos; i++) 
+    limpar_tela();
+    printf("%s%s", BOLD, CYAN);
+    imprimir_linha('=', 70);
+    int len = strlen(titulo);
+    int espacos = (70 - len) / 2;
+    for (int i = 0; i < espacos; i++)
         printf(" ");
-        
-    printf("%s\n", titulo); 
-    imprimir_linha('=', 70); 
-    printf("%s", RESET); 
+    printf("%s\n", titulo);
+    imprimir_linha('=', 70);
+    printf("%s", RESET);
 }
-// Exibe um subtítulo colorido com uma linha divisória abaixo
+
 void imprimir_secao(const char *titulo) {
-    printf("\n%s%s%s%s\n", BOLD, YELLOW, titulo, RESET); 
-    imprimir_linha('-', 70); 
+    printf("\n%s%s%s%s\n", BOLD, YELLOW, titulo, RESET);
+    imprimir_linha('-', 70);
 }
-// Mostra o texto alinhado à esquerda e o valor formatado à direita
+
 void imprimir_valor(const char *label, double valor) {
     printf("%-30s: R$ %10.2f\n", label, valor);
 }
 
-//Funções de Feedback (Ícones e Cores)
 void imprimir_sucesso(const char *msg) {
     printf("\n%s%s✓ %s%s\n", BOLD, GREEN, msg, RESET);
 }
+
 void imprimir_erro(const char *msg) {
     printf("\n%s%s✗ %s%s\n", BOLD, RED, msg, RESET);
 }
+
 void imprimir_aviso(const char *msg) {
     printf("\n%s%s⚠ %s%s\n", BOLD, YELLOW, msg, RESET);
 }
 
-// Retorna 'v' limitado entre os valores 'lo' (mínimo) e 'hi' (máximo)
 double clamp_double(double v, double lo, double hi) {
-    if (v < lo) return lo; 
-    if (v > hi) return hi; 
-    return v; 
+    if (v < lo) return lo;
+    if (v > hi) return hi;
+    return v;
 }
-// Valida e corrige os dados da struct Produto para evitar erros de cálculo
+
 struct Produto validarPercentuaisProduto(struct Produto p)
 {
-    //Variável 'flag' para saber se precisamos avisar o usuário que mudamos algo
     int alterado = 0;
 
-    //Garante que nenhum percentual seja negativo (menor que 0)
     if (p.imposto_percent < 0) { p.imposto_percent = 0; alterado = 1; }
     if (p.taxa_cartao_percent < 0) { p.taxa_cartao_percent = 0; alterado = 1; }
     if (p.lucro_produtor_percent < 0) { p.lucro_produtor_percent = 0; alterado = 1; }
-    
-    //Limta os valores individuais a um teto máximo (99%)
+
     if (p.imposto_percent > 99) { p.imposto_percent = 99; alterado = 1; }
     if (p.taxa_cartao_percent > 99) { p.taxa_cartao_percent = 99; alterado = 1; }
     if (p.lucro_produtor_percent > 99) { p.lucro_produtor_percent = 99; alterado = 1; }
 
-    //A soma de taxas não pode exceder o valor total
     double soma = p.imposto_percent + p.taxa_cartao_percent;
     if (soma > 99) {
-        // Se a soma for inválida, reseta dividindo igualmente (49.5% para cada)
         p.imposto_percent = 49.5;
         p.taxa_cartao_percent = 49.5;
         alterado = 1;
     }
-    //se houve alguma correção automática, exibe o alerta
+
     if (alterado) {
         imprimir_aviso("Percentuais ajustados para valores validos.");
     }
     return p;
 }
+
 int salvarConfigAtomic() {
-    //Tenta escrever os dados em um arquivo temporário (.tmp)
-    FILE *f = fopen(ARQ_CONFIG_TMP, "wb"); // "wb" = write binary (escrita binária)
+    FILE *f = fopen(ARQ_CONFIG_TMP, "wb");
     if (!f) {
         imprimir_erro("Nao foi possivel criar arquivo temporario.");
         return 0;
     }
-    // Grava a struct inteira de uma vez
     if (fwrite(&config, sizeof(config), 1, f) != 1) {
         imprimir_erro("Falha ao gravar configuracao.");
         fclose(f);
-        remove(ARQ_CONFIG_TMP); // Se falhar, apaga o lixo que foi criado
+        remove(ARQ_CONFIG_TMP);
         return 0;
     }
     fclose(f);
-    //Transforma o arquivo atual (se existir) em backup (.bak)
     remove(ARQ_CONFIG_BAK);
     if (rename(ARQ_CONFIG, ARQ_CONFIG_BAK) != 0) {
-        // Ignora erro se arquivo original nao existir (primeira execução)
     }
-    //Promove o arquivo temporário (.tmp) para ser o arquivo oficial
     if (rename(ARQ_CONFIG_TMP, ARQ_CONFIG) != 0) {
         imprimir_erro("Falha ao salvar configuracao!");
-        // Se der erro na troca, tenta restaurar o backup
         rename(ARQ_CONFIG_BAK, ARQ_CONFIG);
         remove(ARQ_CONFIG_TMP);
         return 0;
@@ -207,11 +194,10 @@ int salvarConfigAtomic() {
     imprimir_sucesso("Configuracao salva com sucesso!");
     return 1;
 }
-// Carrega os dados do arquivo binário para a memória RAM
+
 int carregarConfig() {
-    FILE *f = fopen(ARQ_CONFIG, "rb"); // "rb" = read binary (leitura binária)
-    if (!f) return 0; // Se não existir arquivo, retorna 0 (não é erro crítico)
-    // Lê os dados do disco direto para a variável 'config'
+    FILE *f = fopen(ARQ_CONFIG, "rb");
+    if (!f) return 0;
     if (fread(&config, sizeof(config), 1, f) != 1) {
         imprimir_erro("Erro ao ler configuracao.");
         fclose(f);
@@ -221,14 +207,13 @@ int carregarConfig() {
     imprimir_sucesso("Configuracao carregada!");
     return 1;
 }
+
 int salvarProdutosAtomic(struct Produto produtos[], int qtd) {
-    //Cria arquivo temporário
     FILE *f = fopen(ARQ_PRODUTOS_TMP, "wb");
     if (!f) {
         printf("Erro: não foi possível criar arquivo temporário.\n");
         return 0;
     }
-    //loop para salvar cada produto do array no arquivo
     for (int i = 0; i < qtd; i++) {
         if (fwrite(&produtos[i], sizeof(struct Produto), 1, f) != 1) {
             printf("Erro: falha ao salvar dados no arquivo temporário.\n");
@@ -238,7 +223,6 @@ int salvarProdutosAtomic(struct Produto produtos[], int qtd) {
         }
     }
     fclose(f);
-    //Gerencia o Backup (Verifica se o arquivo original existe antes de mover)
     if (access(ARQ_PRODUTOS, F_OK) == 0) {
         remove(ARQ_PRODUTOS_BAK);
         if (rename(ARQ_PRODUTOS, ARQ_PRODUTOS_BAK) != 0) {
@@ -247,10 +231,8 @@ int salvarProdutosAtomic(struct Produto produtos[], int qtd) {
             return 0;
         }
     }
-    //substituição final (Temporário vira oficial)
     if (rename(ARQ_PRODUTOS_TMP, ARQ_PRODUTOS) != 0) {
         printf("Erro: não foi possível substituir o arquivo de produtos.\n");
-        // Tenta restaurar o backup em caso de catástrofe
         if (access(ARQ_PRODUTOS_BAK, F_OK) == 0) {
             rename(ARQ_PRODUTOS_BAK, ARQ_PRODUTOS);
         }
@@ -259,6 +241,7 @@ int salvarProdutosAtomic(struct Produto produtos[], int qtd) {
     }
     return 1;
 }
+
 int carregarProdutos(struct Produto produtos[], int *qtd) {
     FILE *f = fopen(ARQ_PRODUTOS, "rb");
     if (!f) {
@@ -275,10 +258,11 @@ int carregarProdutos(struct Produto produtos[], int *qtd) {
     fclose(f);
     return 1;
 }
+
 void lerLinha(char *buf, int n) {
-    if (fgets(buf, n, stdin) == NULL) { 
-        buf[0] = '\0'; 
-        return; 
+    if (fgets(buf, n, stdin) == NULL) {
+        buf[0] = '\0';
+        return;
     }
     buf[strcspn(buf, "\n")] = '\0';
 
@@ -287,13 +271,13 @@ void lerLinha(char *buf, int n) {
         while ((c = getchar()) != '\n' && c != EOF);
     }
 }
+
 double coletarIngredientesText(char *descricao, int descSize, int *rendimento) {
     char buf[BUF_SIZE];
     char linha_desc[256];
     int n;
     double custo_total = 0.0;
     descricao[0] = '\0';
-    //Loop para garantir número de ingredientes válido
     do {
         printf("\n%sQuantos ingredientes tem essa receita? %s", YELLOW, RESET);
         lerLinha(buf, sizeof(buf));
@@ -307,13 +291,11 @@ double coletarIngredientesText(char *descricao, int descSize, int *rendimento) {
         int tipo;
         double preco, quantidade, custo;
         printf("\n%s%s> Ingrediente %d%s\n", BOLD, MAGENTA, i + 1, RESET);
-        //Não aceitar nome vazio
         do {
             printf("%sNome: %s", CYAN, RESET);
             lerLinha(nome, sizeof(nome));
             if (strlen(nome) == 0) printf("%s[!] O nome nao pode ser vazio.%s\n", RED, RESET);
         } while (strlen(nome) == 0);
-        //Loop para garantir que seja apenas 1 ou 2
         do {
             printf("%sTipo (1=preco/kg | 2=preco por unidade): %s", CYAN, RESET);
             lerLinha(buf, sizeof(buf));
@@ -323,7 +305,6 @@ double coletarIngredientesText(char *descricao, int descSize, int *rendimento) {
             }
         } while (tipo != 1 && tipo != 2);
         if (tipo == 2) {
-            // Unidade
             do {
                 printf("%sPreco por unidade (R$): %s", CYAN, RESET);
                 lerLinha(buf, sizeof(buf));
@@ -341,7 +322,6 @@ double coletarIngredientesText(char *descricao, int descSize, int *rendimento) {
                      "  • %s: %.0f un x R$ %.2f = R$ %.2f\n",
                      nome, quantidade, preco, custo);
         } else {
-            // KG
             do {
                 printf("%sPreco por KG (R$): %s", CYAN, RESET);
                 lerLinha(buf, sizeof(buf));
@@ -364,7 +344,6 @@ double coletarIngredientesText(char *descricao, int descSize, int *rendimento) {
             strncat(descricao, linha_desc, descSize - strlen(descricao) - 1);
         printf("%s-> Custo de %s: %sR$ %.2f%s\n", GREEN, nome, BOLD, custo, RESET);
     }
-    //validar rendimento
     do {
         printf("\n%sRendimento da receita (quantas unidades produz): %s", YELLOW, RESET);
         lerLinha(buf, sizeof(buf));
@@ -376,6 +355,7 @@ double coletarIngredientesText(char *descricao, int descSize, int *rendimento) {
 
     return custo_total;
 }
+
 void calcularTudo(struct Produto *p) {
     double custo_base_unitario;
     if ((*p).modo == 1) {
@@ -401,6 +381,7 @@ void calcularTudo(struct Produto *p) {
     if (total_percent >= MAX_PERCENT) total_percent = HALF_MAX_PERCENT * 2;
     (*p).preco_produtor = preco_com_lucro / (1.0 - (total_percent / 100.0));
 }
+
 double lerDoubleValidado(const char *msg, double valorAtual) {
     char buf[BUF_SIZE];
     double valor;
@@ -409,7 +390,7 @@ double lerDoubleValidado(const char *msg, double valorAtual) {
         printf("%s%s [ENTER para manter %.2f]: %s", CYAN, msg, valorAtual, RESET);
         lerLinha(buf, sizeof(buf));
         if (buf[0] == '\0') {
-            return valorAtual; 
+            return valorAtual;
         }
         char *endptr;
         valor = strtod(buf, &endptr);
@@ -421,6 +402,7 @@ double lerDoubleValidado(const char *msg, double valorAtual) {
     }
     return valor;
 }
+
 int lerIntValidado(const char *msg, int valorAtual) {
     char buf[BUF_SIZE];
     int valor;
@@ -429,7 +411,7 @@ int lerIntValidado(const char *msg, int valorAtual) {
         printf("%s%s [ENTER para manter %d]: %s", CYAN, msg, valorAtual, RESET);
         lerLinha(buf, sizeof(buf));
         if (buf[0] == '\0') {
-            return valorAtual; 
+            return valorAtual;
         }
         char *endptr;
         valor = (int)strtol(buf, &endptr, 10);
@@ -441,6 +423,7 @@ int lerIntValidado(const char *msg, int valorAtual) {
     }
     return valor;
 }
+
 void configurarDespesasFixas() {
     imprimir_cabecalho("CONFIGURAR DESPESAS FIXAS MENSAIS");
     printf("\n%s%sVALORES ATUAIS:%s\n", BOLD, YELLOW, RESET);
@@ -459,6 +442,7 @@ void configurarDespesasFixas() {
     }
     pausar();
 }
+
 void listarProdutos(struct Produto produtos[], int qtd) {
     imprimir_cabecalho("LISTA DE PRODUTOS");
     if (qtd == 0) {
@@ -468,22 +452,23 @@ void listarProdutos(struct Produto produtos[], int qtd) {
     printf("%-4s | %-30s | %-12s | %-12s\n", "ID", "NOME", "CUSTO UN.", "PRECO VENDA");
     imprimir_linha('-', 70);
     for(int i = 0; i < qtd; i++) {
-        printf("%03d  | %-30.30s | R$ %9.2f | %sR$ %9.2f%s\n", 
-            i + 1, 
-            produtos[i].nome, 
-            produtos[i].custo_unitario, 
+        printf("%03d  | %-30.30s | R$ %9.2f | %sR$ %9.2f%s\n",
+            i + 1,
+            produtos[i].nome,
+            produtos[i].custo_unitario,
             GREEN, produtos[i].preco_produtor, RESET
         );
     }
     printf("\nTotal: %d produtos.\n", qtd);
 }
+
 void excluirProdutoIndex(struct Produto produtos[], int *qtd, int idx) {
-    // Desloca todos os itens à direita do index uma posição para a esquerda
     for (int i = idx; i < *qtd - 1; i++) {
         produtos[i] = produtos[i+1];
     }
     (*qtd)--;
 }
+
 void excluirProduto(struct Produto produtos[], int *qtd) {
     imprimir_cabecalho("EXCLUIR PRODUTO");
     listarProdutos(produtos, *qtd);
@@ -497,13 +482,13 @@ void excluirProduto(struct Produto produtos[], int *qtd) {
     if (buf[0] == 's' || buf[0] == 'S') {
         excluirProdutoIndex(produtos, qtd, idx);
         imprimir_sucesso("Produto excluido.");
-        // Salva automaticamente após excluir
         salvarProdutosAtomic(produtos, *qtd);
     } else {
         printf("Operacao cancelada.\n");
     }
     pausar();
 }
+
 void editarProduto(struct Produto produtos[], int qtd) {
     if (qtd == 0) {
         imprimir_aviso("Nenhum produto para editar.");
@@ -517,7 +502,6 @@ void editarProduto(struct Produto produtos[], int qtd) {
     limpar_tela();
     printf("%sEDITANDO: %s%s\n", BOLD, p->nome, RESET);
     imprimir_linha('-', 50);
-    // Loop de edição de campos específicos
     while(1) {
         printf("\n1. Nome (%s)\n", p->nome);
         printf("2. Lucro Desejado (%.1f%%)\n", p->lucro_produtor_percent);
@@ -541,19 +525,17 @@ void editarProduto(struct Produto produtos[], int qtd) {
             break;
         }
     }
-    // Recalcula tudo com os novos valores
     calcularTudo(p);
     imprimir_sucesso("Produto atualizado e recalculado!");
-    // Salva alterações
     salvarProdutosAtomic(produtos, qtd);
 }
+
 void calculoRapido() {
     imprimir_cabecalho("CALCULO RAPIDO (SIMULADOR)");
     printf("Este modo nao salva o produto, apenas simula o preco.\n\n");
     struct Produto simul;
     memset(&simul, 0, sizeof(simul));
-    // Configurações simplificadas para cálculo rápido
-    simul.modo = 1; // Custo direto
+    simul.modo = 1;
     simul.rendimento = 1;
     simul.preco_custo = lerDoubleValidado("Custo direto do produto (R$)", 0.0);
     simul.lucro_produtor_percent = lerDoubleValidado("Lucro desejado (%)", 30.0);
@@ -565,6 +547,7 @@ void calculoRapido() {
     imprimir_valor("PRECO SUGERIDO", simul.preco_produtor);
     pausar();
 }
+
 void menuPosCadastro(struct Produto produtos[], int *qtd, int idxRecente) {
     char buf[BUF_SIZE];
     int opc = 0;
@@ -587,17 +570,17 @@ void menuPosCadastro(struct Produto produtos[], int *qtd, int idxRecente) {
                 imprimir_aviso("Entrada invalida! Digite um numero entre 1 e 5.");
             }
         }
-        if (opc == 1) { // salvar produtos
+        if (opc == 1) {
             if (salvarProdutosAtomic(produtos, *qtd))
                 imprimir_sucesso("Produtos salvos com sucesso!");
             else
                 imprimir_erro("Falha ao salvar produtos!");
             pausar();
-        } else if (opc == 2) { // editar produto
+        } else if (opc == 2) {
              editarProduto(produtos, *qtd);
              pausar();
-             break; 
-        } else if (opc == 3) { // excluir produto
+             break;
+        } else if (opc == 3) {
             if (idxRecente >= 0 && idxRecente < *qtd) {
                 printf("%s%sTem certeza que deseja excluir o produto \"%s\"? (s/n): %s", BOLD, RED, produtos[idxRecente].nome, RESET);
                 lerLinha(buf, sizeof(buf));
@@ -614,17 +597,17 @@ void menuPosCadastro(struct Produto produtos[], int *qtd, int idxRecente) {
                 imprimir_erro("Produto invalido para exclusao.");
                 pausar();
             }
-            break; 
-        } else if (opc == 4) { 
+            break;
+        } else if (opc == 4) {
             listarProdutos(produtos, *qtd);
             pausar();
-        } else if (opc == 5) { 
+        } else if (opc == 5) {
             break;
         }
     }
 }
+
 void cadastrarProduto(struct Produto produtos[], int *qtd) {
-    //Verificação de Segurança (Limite do Array)
     if (*qtd >= MAX_PRODUTOS) {
         imprimir_erro("Limite de produtos atingido!");
         pausar();
@@ -633,7 +616,6 @@ void cadastrarProduto(struct Produto produtos[], int *qtd) {
     imprimir_cabecalho("CADASTRAR NOVO PRODUTO");
     char buf[BUF_SIZE];
     struct Produto p;
-    // Limpa a memória da struct para evitar lixo
     memset(&p, 0, sizeof(p));
     do {
         printf("\n%sNome do produto: %s", CYAN, RESET);
@@ -656,39 +638,28 @@ void cadastrarProduto(struct Produto produtos[], int *qtd) {
         }
     } while (p.modo != 1 && p.modo != 2);
     if (p.modo == 1) {
-        //Custo Direto
         do {
             printf("%sPreco de custo por unidade (R$): %s", CYAN, RESET);
             lerLinha(buf, sizeof(buf));
             p.preco_custo = atof(buf);
-            
             if (p.preco_custo <= 0) {
                 printf("%s[!] O custo deve ser maior que zero.%s\n", RED, RESET);
             }
         } while (p.preco_custo <= 0);
-        
-        // Define rendimento padrão para modo simples
         p.rendimento = 1;
     } else {
-        //Receita (Ingredientes)
         imprimir_secao("INGREDIENTES DA RECEITA");
-        
-        // Chama sua função já melhorada anteriormente
         double custoCalc = coletarIngredientesText(p.ingredientes_desc, sizeof(p.ingredientes_desc), &p.rendimento);
-        
         if (custoCalc <= 0.0) {
             imprimir_erro("Erro: Custo calculado invalido ou cancelado.");
             pausar();
             return;
         }
         p.investimento_total = custoCalc;
-        // Despesas Variáveis (Validar >= 0)
         do {
             printf("\n%sDespesas variaveis extras (embalagem, entrega) [R$]: %s", CYAN, RESET);
             lerLinha(buf, sizeof(buf));
-            // Aqui permitimos 0, pois pode não ter extra
             p.despesas_variaveis = atof(buf);
-            
             if (p.despesas_variaveis < 0) {
                 printf("%s[!] O valor nao pode ser negativo.%s\n", RED, RESET);
             }
@@ -698,8 +669,7 @@ void cadastrarProduto(struct Produto produtos[], int *qtd) {
     do {
         printf("\n%sUsar regime MEI COMERCIO (imposto fixo 4%%)? (s/n): %s", CYAN, RESET);
         lerLinha(buf, sizeof(buf));
-        resp_mei = buf[0]; // Pega o primeiro char
-        
+        resp_mei = buf[0];
         if (resp_mei != 's' && resp_mei != 'S' && resp_mei != 'n' && resp_mei != 'N') {
             printf("%s[!] Responda com 's' para sim ou 'n' para nao.%s\n", RED, RESET);
         }
@@ -711,12 +681,10 @@ void cadastrarProduto(struct Produto produtos[], int *qtd) {
         printf("%s✓ MEI Comercio aplicado (4%%)%s\n", GREEN, RESET);
     } else {
         p.usar_mei_comercio = 0;
-        // Validação Imposto Personalizado
         do {
             printf("%sPercentual de imposto (%%): %s", CYAN, RESET);
             lerLinha(buf, sizeof(buf));
             p.imposto_percent = atof(buf);
-            
             if (p.imposto_percent < 0 || p.imposto_percent >= 100) {
                 printf("%s[!] Digite um valor entre 0 e 99.%s\n", RED, RESET);
             }
@@ -737,7 +705,7 @@ void cadastrarProduto(struct Produto produtos[], int *qtd) {
         if (p.lucro_produtor_percent <= 0) printf("%s[!] O lucro deve ser maior que zero.%s\n", RED, RESET);
     } while (p.lucro_produtor_percent <= 0);
 
-    p = validarPercentuaisProduto(p); //Mantém sua função de segurança final
+    p = validarPercentuaisProduto(p);
     calcularTudo(&p);
 
     produtos[*qtd] = p;
@@ -748,11 +716,11 @@ void cadastrarProduto(struct Produto produtos[], int *qtd) {
     }
     imprimir_secao("RESULTADO DO CADASTRO");
     imprimir_sucesso("Produto cadastrado com sucesso!");
-    // Exibe valores formatados
     printf("  > Custo Unitario: %sR$ %.2f%s\n", YELLOW, p.custo_unitario, RESET);
     printf("  > Preco Final:    %sR$ %.2f%s\n", GREEN, p.preco_produtor, RESET);
     menuPosCadastro(produtos, qtd, idxRecente);
 }
+
 int main() {
     struct Produto produtos[MAX_PRODUTOS];
     int qtd = 0;
@@ -772,12 +740,6 @@ int main() {
     do {
         limpar_tela();
         imprimir_cabecalho("SIPRI - SISTEMA DE PRECIFICACAO INTELIGENTE");
-
-        printf("\n%s%sCONFIGURACOES ATUAIS:%s\n", BOLD, MAGENTA, RESET);
-        printf("%sAgua: R$ %.2f/mes\n", CYAN, config.gasto_agua);
-        printf("%sLuz:  R$ %.2f/mes\n", CYAN, config.gasto_luz);
-        printf("%sGas:  R$ %.2f/mes\n", CYAN, config.gasto_gas);
-        printf("%sProducao mensal: %d unidades%s\n", CYAN, config.producao_mensal_unidades, RESET);
         imprimir_secao("MENU PRINCIPAL");
         printf("%s1%s - Cadastrar produto\n", GREEN, RESET);
         printf("%s2%s - Listar produtos\n", GREEN, RESET);
