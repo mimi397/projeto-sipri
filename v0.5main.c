@@ -321,7 +321,7 @@ double coletarIngredientesText(char *descricao, int descSize, int *rendimento) {
             } while (quantidade <= 0);
             custo = preco * quantidade;
             snprintf(linha_desc, sizeof(linha_desc),
-                     "  • %s: %.0f un x R$ %.2f = R$ %.2f\n",
+                     "  [*] %s: %.0f un x R$ %.2f = R$ %.2f\n",
                      nome, quantidade, preco, custo);
         } else {
             do {
@@ -338,13 +338,13 @@ double coletarIngredientesText(char *descricao, int descSize, int *rendimento) {
             } while (quantidade <= 0);
             custo = (preco / 1000.0) * quantidade;
             snprintf(linha_desc, sizeof(linha_desc),
-                     "  • %s: %.0fg x R$ %.2f/kg = R$ %.2f\n",
+                     "  [*] %s: %.0fg x R$ %.2f/kg = R$ %.2f\n",
                      nome, quantidade, preco, custo);
         }
         custo_total += custo;
         if ((int)strlen(descricao) + (int)strlen(linha_desc) < descSize - 1)
             strncat(descricao, linha_desc, descSize - strlen(descricao) - 1);
-        printf("%s-> Custo de %s: %sR$ %.2f%s\n", GREEN, nome, BOLD, custo, RESET);
+        printf("%s[->] Custo de %s: %sR$ %.2f%s\n", GREEN, nome, BOLD, custo, RESET);
     }
     do {
         printf("\n%sRendimento da receita (quantas unidades produz): %s", YELLOW, RESET);
@@ -733,7 +733,7 @@ void cadastrarProduto(struct Produto produtos[], int *qtd) {
     if (resp_mei == 's' || resp_mei == 'S') {
         p.usar_mei_comercio = 1;
         p.imposto_percent = 4.0;
-        printf("%s✓ MEI Comercio aplicado (4%%)%s\n", GREEN, RESET);
+        printf("%s[OK] MEI Comercio aplicado (4%%)%s\n", GREEN, RESET);
     } else {
         p.usar_mei_comercio = 0;
         do {
@@ -771,8 +771,8 @@ void cadastrarProduto(struct Produto produtos[], int *qtd) {
     }
     imprimir_secao("RESULTADO DO CADASTRO");
     imprimir_sucesso("Produto cadastrado com sucesso!");
-    printf("  > Custo Unitario: %sR$ %.2f%s\n", YELLOW, p.custo_unitario, RESET);
-    printf("  > Preco Final:    %sR$ %.2f%s\n", GREEN, p.preco_produtor, RESET);
+    printf("  [>] Custo Unitario: %sR$ %.2f%s\n", YELLOW, p.custo_unitario, RESET);
+    printf("  [>] Preco Final:    %sR$ %.2f%s\n", GREEN, p.preco_produtor, RESET);
     menuPosCadastro(produtos, qtd, idxRecente);
 }
 
